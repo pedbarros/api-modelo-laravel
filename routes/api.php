@@ -2,28 +2,14 @@
 
 use Illuminate\Http\Request;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+Route::post('/auth/register', 'API\RegisterController@register'); // OK
+Route::post('auth/login', 'API\AuthController@login');
+Route::post('auth/refresh', 'API\AuthController@refresh');
+Route::get('auth/logout', 'API\AuthController@logout');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::group(['middleware' => 'jwt.auth'], function () {
+    Route::resource('products', 'ProductController');
+
+    Route::resource('categories', 'CategoryController');
 });
-
-Route::get('/products/{id}', 'ProductController@show');
-
-Route::get('/categories/{id}', 'CategoryController@show');
-
-Route::get('/products', function () {
-    $builder = \App\Product::where('id','1')->orWhere('id','2');
-
-dd(\App\Helpers\AppHelper::instance()->toSQLWithParams($builder->toSql()));
-});
-

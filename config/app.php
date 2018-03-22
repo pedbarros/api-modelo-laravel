@@ -52,7 +52,8 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    //'url' => env('APP_URL', 'http://localhost'),
+    'url' => 'http://www.apimodelo.com',
 
     /*
     |--------------------------------------------------------------------------
@@ -160,6 +161,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+
     ],
 
     /*
@@ -209,7 +212,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        'AppHelper' => App\Helpers\AppHelper::class
+        'AppHelper' => App\Helpers\AppHelper::class,
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
     ],
 
