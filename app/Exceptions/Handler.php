@@ -49,14 +49,45 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        // This will replace our 404 response with
-        // a JSON response.
-        if ($exception){
-            return response()->json([
-                'error' => 'Resource not found'
-            ], 404);
+        if ($exception instanceof ValidationException){
+            return $this->convertValidationExceptionToResponse($exception, $request);
         }
 
-        return parent::render($request, $exception);
+        if ($exception instanceof ModelNotFoundException){
+            $modelName = strtolower(class_basename($exception->getModel()));
+
+            return response()->json(["Não existe {$modelName} com essa identificação"], 404);
+        }
+
+        if ($exception instanceof AuthorizationException){
+            return response()->json([$exception->getMessage()], 403);
+        }
+
+        if ($exception instanceof MethodNotAllowedHttpException){
+            return response()->json(["O método requisitado é invalido"], 405);
+        }
+
+        if ($exception instanceof NotFoundException){
+            return response()->json(["A URL espeficiada não existe"], 404);
+        }
+
+        if ($exception instanceof HttpException){
+            return response()->json([$exception->getMessage()], $exception->getStatusCode());
+        }
+
+        if ($exception instanceof QueryException){
+            $errorCode = $exception->errorInfo[1];
+            if ($errorCode == 1451){
+                return response()->json(["
+não pode remover este recurso permanentemente. Está relacionado com qualquer outro recurso"], 409);
+            }
+            
+        }
+    
+        if (config('app.debug')){
+            return parent::render($request, $exception);
+        }
+
+        return response()->json(['error' => 'Exceção não esperada', 'exception' => $exception], 500);
     }
 }
